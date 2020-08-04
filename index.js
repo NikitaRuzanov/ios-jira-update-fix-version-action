@@ -11,34 +11,11 @@ import {context, GitHub} from '@actions/github'
 main();
 
 async function main() {
-  if (!process.env.GITHUB_TOKEN) {
-    core.setFailed(
-      `GITHUB_TOKEN is not configured. Make sure you made it available to your action
-  
-  uses: bolteu/ios-jira-update-fix-version-action@master
-  env:
-    GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}`
-    );
-    return;
-  }
-
-  if (!process.env.GITHUB_REPOSITORY) {
-    core.setFailed(
-      'GITHUB_REPOSITORY missing, must be set to "<repo owner>/<repo name>"'
-    );
-    return;
-  }
-  if (!process.env.GITHUB_HEAD_REF) {
-    core.setFailed(
-      "GITHUB_HEAD_REF missing, must be set to the repository's default branch"
-    );
-    return;
-  }
-
   try {
     const inputs = {
       ticketRegexp: core.getInput("ticketRegexp"),
       targetBranch: core.getInput("targetBranch"),
+      sourceBranch: core.getInput("sourceBranch"),
       jiraAccount: core.getInput("jiraAccount"),
       jiraToken: core.getInput("jiraToken"),
       jiraHost: core.getInput("jiraHost"),
@@ -54,7 +31,7 @@ async function main() {
 
     // checking the branch
     const brachRegexp = new RegExp(`release\/${inputs.versionSuffix}.\\d{1,2}.\\d{1,3}`)
-    const brachVerification = process.env.GITHUB_HEAD_REF.match(/release/gmi)
+    const brachVerification = inputs.sourceBranch.match(/release/gmi)
     if (brachVerification == null) {
       const body = `Wrong brach format. Please fix it. Expected format is ${brachRegexp}`
       await client.issues.createComment({...context.issue, body: body})
@@ -62,9 +39,9 @@ async function main() {
     }
 
     await runShellCommand(`git fetch origin ${inputs.targetBranch}`)
-    await runShellCommand(`git fetch origin ${process.env.GITHUB_HEAD_REF}`)
+    await runShellCommand(`git fetch origin ${inputs.sourceBranch}`)
 
-    const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_HEAD_REF}`);
+    const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${inputs.sourceBranch}`);
 
     const regexp = new RegExp(inputs.ticketRegexp, "gmi")
     core.info(regexp)

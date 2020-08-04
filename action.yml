@@ -33,6 +33,9 @@ inputs:
     description: "Branch name to compare with [default: Master]"
     required: true
     default: "master"
+  sourceBranch:
+    description: "Branch name to compare from [default: Master]"
+    required: true
 runs:
   using: "node12"
   main: "dist/index.js"
