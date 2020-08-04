@@ -3756,7 +3756,7 @@ async function main() {
       jiraToken: core.getInput("jiraToken"),
       jiraHost: core.getInput("jiraHost"),
       projectName: core.getInput("projectName"),
-      versionSuffix: core.getInput("versionSuffix"),
+      versionPrefix: core.getInput("versionPrefix"),
       jiraProjectIds: core.getInput("jiraProjectIds").split(",")
     };
 
@@ -3766,7 +3766,7 @@ async function main() {
     const client = new _actions_github__WEBPACK_IMPORTED_MODULE_0__.GitHub(token, { })
 
     // checking the branch
-    const brachRegexp = new RegExp(`release\/${inputs.versionSuffix}.\\d{1,2}.\\d{1,3}`)
+    const brachRegexp = new RegExp(`release\/${inputs.versionPrefix}.\\d{1,2}.\\d{1,3}`)
     const brachVerification = inputs.sourceBranch.match(/release/gmi)
     if (brachVerification == null) {
       const body = `Wrong brach format. Please fix it. Expected format is ${brachRegexp}`
@@ -3787,7 +3787,7 @@ async function main() {
     core.info("Commits: " + JSON.stringify(matches));
 
     var version = await runShellCommand(`sed -n '/MARKETING_VERSION/{s/MARKETING_VERSION = //;s/;//;s/^[[:space:]]*//;p;q;}' ./${inputs.projectName}.xcodeproj/project.pbxproj`)
-    version = `${inputs.versionSuffix}.${version}`
+    version = `${inputs.versionPrefix}.${version}`
     core.info("Version number is " + version)
 
 

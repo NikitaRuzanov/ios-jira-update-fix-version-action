@@ -10,7 +10,7 @@ inputs:
   projectName:
     description: "Xcode pbxprodj file name"
     required: true
-  versionSuffix:
+  versionPrefix:
     description: "It will be appended before version"
     required: true
   jiraAccount:
