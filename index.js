@@ -30,7 +30,7 @@ async function main() {
     const client = new GitHub(token, { })
 
     // checking the branch
-    const brachRegexp = new RegExp(`release\/${inputs.versionPrefix}.\\d{1,2}.\\d{1,3}`)
+    const brachRegexp = new RegExp(`(release|hotfix)\/${inputs.versionPrefix}.\\d{1,2}.\\d{1,3}`)
     const brachVerification = inputs.sourceBranch.match(/release/gmi)
     if (brachVerification == null) {
       const body = `Wrong brach format. Please fix it. Expected format is ${brachRegexp}`
